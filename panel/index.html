@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Alice · Panel</title>
+<style>
+:root{--negro:#1d1a1c;--crema:#f7f2ee;--blanco:#fff;--rosa:#c98a9b;--rosa-suave:#f3e3e8;--gris:#7a7377;--linea:#e7dfe2;--verde:#2f7d5b;--verde-suave:#e3f2ea;--ambar:#a86b12;--ambar-suave:#fbefd9;--rojo:#b23b3b;--rojo-suave:#f8e1e1}
+*{box-sizing:border-box}
+body{margin:0;background:var(--crema);color:var(--negro);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:15px;line-height:1.4}
+button{font:inherit;cursor:pointer}
+header{background:var(--negro);color:var(--blanco);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:5}
+header h1{font-size:17px;margin:0;letter-spacing:.04em;font-weight:600}
+header h1 span{color:var(--rosa);font-weight:400}
+#actualizado{font-size:12px;color:#bdb4b8}
+nav{display:flex;gap:4px;padding:8px 12px;background:var(--blanco);border-bottom:1px solid var(--linea);position:sticky;top:46px;z-index:4;overflow-x:auto}
+nav button{border:0;background:none;padding:8px 12px;border-radius:999px;color:var(--gris);white-space:nowrap}
+nav button.activa{background:var(--negro);color:var(--blanco)}
+nav .num{display:inline-block;min-width:18px;padding:0 5px;margin-left:4px;border-radius:9px;background:var(--rosa);color:#fff;font-size:11px;line-height:18px;text-align:center}
+main{max-width:1100px;margin:0 auto;padding:14px 16px 60px}
+.vista{display:none}.vista.activa{display:block}
+.tarjetas{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px}
+.dato{background:var(--blanco);border:1px solid var(--linea);border-radius:12px;padding:12px}
+.dato b{display:block;font-size:24px;font-variant-numeric:tabular-nums}
+.dato small{color:var(--gris)}
+h2{font-size:15px;margin:18px 0 8px}
+.caja{background:var(--blanco);border:1px solid var(--linea);border-radius:12px;padding:12px;margin-bottom:10px}
+.vacio{color:var(--gris);padding:10px 0}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chip{border:1px solid var(--linea);background:var(--blanco);border-radius:999px;padding:6px 12px;color:var(--gris)}
+.chip.activa{border-color:var(--negro);color:var(--negro);font-weight:600}
+.columnas{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:720px){.columnas{grid-template-columns:1fr}}
+.columnas>*,.chats>*{min-width:0}
+.columna h3{font-size:14px;margin:0 0 8px;display:flex;justify-content:space-between}
+.pedido{background:var(--blanco);border:1px solid var(--linea);border-radius:12px;padding:12px;margin-bottom:10px}
+.pedido .fila{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.pedido .nombre{font-weight:600}
+.pedido .total{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.pedido .sub{color:var(--gris);font-size:13px}
+.pedido .prendas{margin:6px 0}
+.pedido details{font-size:13px;color:var(--gris);margin-top:6px}
+.pedido details p{white-space:pre-wrap;margin:6px 0 0}
+.estado{display:inline-block;font-size:12px;padding:2px 8px;border-radius:999px;margin-top:4px}
+.e-ok{background:var(--verde-suave);color:var(--verde)}.e-rev{background:var(--ambar-suave);color:var(--ambar)}.e-esp{background:var(--rosa-suave);color:#8a4a5c}.e-no{background:var(--rojo-suave);color:var(--rojo)}.e-gris{background:#eee;color:#666}
+.comprobante{display:block;margin-top:8px}
+.comprobante img{max-width:100%;max-height:220px;border-radius:8px;border:1px solid var(--linea)}
+.acciones{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.btn{border:0;border-radius:8px;padding:8px 12px;background:var(--negro);color:#fff}
+.btn.sec{background:var(--blanco);color:var(--negro);border:1px solid var(--linea)}
+.btn.peligro{background:var(--blanco);color:var(--rojo);border:1px solid var(--rojo-suave)}
+.btn:disabled{opacity:.5;cursor:default}
+table{width:100%;border-collapse:collapse;background:var(--blanco);border-radius:12px;overflow:hidden;border:1px solid var(--linea)}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--linea);font-size:14px}
+th{font-size:12px;color:var(--gris);font-weight:600}
+td.n{text-align:right;font-variant-numeric:tabular-nums}
+.unid{display:inline-flex;align-items:center;gap:6px}
+.unid button{width:28px;height:28px;border-radius:50%;border:1px solid var(--linea);background:var(--blanco)}
+.alerta{color:var(--rojo);font-weight:600}
+.chats{display:grid;grid-template-columns:320px 1fr;gap:12px}
+@media (max-width:720px){.chats{grid-template-columns:1fr}.chats.abierto .lista{display:none}.chats:not(.abierto) .hilo{display:none}}
+.lista .item{background:var(--blanco);border:1px solid var(--linea);border-radius:12px;padding:10px 12px;margin-bottom:8px;cursor:pointer}
+.lista .item.sel{border-color:var(--negro)}
+.lista .item .ultimo{color:var(--gris);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hilo{background:var(--blanco);border:1px solid var(--linea);border-radius:12px;display:flex;flex-direction:column;min-height:420px;max-height:75vh}
+.hilo .cab{padding:10px 12px;border-bottom:1px solid var(--linea);display:flex;justify-content:space-between;align-items:center;gap:8px}
+.mensajes{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:6px}
+.burbuja{max-width:80%;padding:8px 10px;border-radius:12px;white-space:pre-wrap;font-size:14px}
+.b-human{align-self:flex-start;background:#f1eeee}
+.b-ai{align-self:flex-end;background:var(--rosa-suave)}
+.b-paula{align-self:flex-end;background:var(--negro);color:#fff}
+.burbuja small{display:block;font-size:11px;opacity:.65;margin-top:3px}
+.responder{border-top:1px solid var(--linea);padding:10px;display:flex;gap:8px}
+.responder textarea{flex:1;border:1px solid var(--linea);border-radius:8px;padding:8px;font:inherit;font-size:16px;resize:none;height:44px}
+.pausa{font-size:12px;padding:3px 8px;border-radius:999px;background:var(--ambar-suave);color:var(--ambar)}
+#login{max-width:20rem;width:calc(100% - 2rem);margin:4rem auto;background:var(--blanco);padding:1.5rem;border-radius:12px;border:1px solid var(--linea)}
+#login input{width:100%;padding:.65rem;margin-bottom:.65rem;border:1px solid var(--linea);border-radius:8px;font-size:16px}
+#aviso{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:var(--negro);color:#fff;padding:10px 16px;border-radius:999px;font-size:14px;display:none;z-index:10;max-width:calc(100% - 32px)}
+.volver{display:none}@media (max-width:720px){.volver{display:inline-block}}
+</style>
+</head>
+<body>
+<div id="login">
+  <h2 style="margin-top:0">Alice · Panel</h2>
+  <input id="usuario" placeholder="Usuario" autocapitalize="off" autocorrect="off">
+  <input id="clave" type="password" placeholder="Contraseña">
+  <button id="entrar" class="btn" style="width:100%">Entrar</button>
+  <div id="loginError" style="color:var(--rojo);font-size:13px;margin-top:8px"></div>
+</div>
+
+<div id="app" style="display:none">
+  <header><h1>ALICE <span>Signature</span></h1><div id="actualizado"></div></header>
+  <nav>
+    <button data-v="hoy" class="activa">Hoy</button>
+    <button data-v="pedidos">Pedidos<span class="num" id="n-pedidos" hidden></span></button>
+    <button data-v="inventario">Inventario<span class="num" id="n-inv" hidden></span></button>
+    <button data-v="chats">Conversaciones</button>
+  </nav>
+  <main>
+    <section class="vista activa" id="v-hoy"></section>
+    <section class="vista" id="v-pedidos"></section>
+    <section class="vista" id="v-inventario"></section>
+    <section class="vista" id="v-chats">
+      <div class="chips" id="etapas"></div>
+      <div class="chats" id="chats"><div class="lista" id="lista"></div><div class="hilo" id="hilo"></div></div>
+    </section>
+  </main>
+</div>
+<div id="aviso"></div>
+
+<script>
+const B = 'https://q3uhvgat.rpcld.co/webhook/';
+let auth = null, D = null, filtroPedidos = 'despachar', filtroEtapa = 'todas', chatAbierto = null, borrador = {};
+try { auth = sessionStorage.getItem('alice_panel_auth'); } catch (e) {}
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const plata = n => '$' + Number(n || 0).toLocaleString('es-CO');
+const dia = f => new Date(f).toLocaleDateString('en-CA', { timeZone: 'America/Bogota' });
+const hoy = () => dia(new Date());
+const hora = f => new Date(f).toLocaleString('es-CO', { timeZone: 'America/Bogota', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' });
+const cel = w => { let s = String(w || '').replace(/\D/g, ''); if (s.startsWith('57') && s.length === 12) s = s.slice(2); return s.length === 10 ? s.slice(0,3)+' '+s.slice(3,6)+' '+s.slice(6) : (w || ''); };
+const esMed = p => /medell/i.test(p.ciudad || '') || (!p.ciudad && /medell/i.test(p.detalle_pedido || ''));
+const prendas = p => (p.items || []).map(i => (i.cantidad > 1 ? i.cantidad + ' × ' : '') + (i.prenda || '')).join(' + ') || (p.sin_pedido ? 'Foto sin pedido confirmado' : (p.detalle_pedido || '').slice(0, 80));
+
+function aviso(t) { const a = $('aviso'); a.textContent = t; a.style.display = 'block'; clearTimeout(a._t); a._t = setTimeout(() => a.style.display = 'none', 3500); }
+
+const ESTADOS = {
+  pendiente: ['Esperando pago', 'e-esp'], comprobante_recibido: ['Comprobante por revisar', 'e-rev'], pago_no_llego: ['Pago no llegó', 'e-no'],
+  pagado: ['Pagado · por despachar', 'e-ok'], contra_entrega_confirmado: ['Contra entrega · por despachar', 'e-ok'],
+  despachado: ['Despachado', 'e-gris'], cancelado: ['Cancelado', 'e-gris']
+};
+const GRUPOS = {
+  despachar: ['Para despachar', p => ['pagado', 'contra_entrega_confirmado'].includes(p.estado)],
+  revisar: ['Por revisar', p => p.estado === 'comprobante_recibido'],
+  esperando: ['Esperando pago', p => ['pendiente', 'pago_no_llego'].includes(p.estado)],
+  despachados: ['Despachados', p => p.estado === 'despachado'],
+  cancelados: ['Cancelados', p => p.estado === 'cancelado']
+};
+
+async function llamar(ruta, cuerpo) {
+  const op = { headers: { Authorization: auth } };
+  if (cuerpo) { op.method = 'POST'; op.headers['Content-Type'] = 'application/json'; op.body = JSON.stringify(cuerpo); }
+  const r = await fetch(B + ruta, op);
+  if (r.status === 401 || r.status === 403) { salir(); throw new Error('clave'); }
+  if (!r.ok) throw new Error('servidor ' + r.status);
+  return r.json();
+}
+
+$('entrar').onclick = async () => {
+  auth = 'Basic ' + btoa($('usuario').value + ':' + $('clave').value);
+  $('loginError').textContent = 'Entrando…';
+  try { D = await llamar('alice-panel-datos'); try { sessionStorage.setItem('alice_panel_auth', auth); } catch (e) {} $('clave').value = ''; mostrar(); }
+  catch (e) { $('loginError').textContent = e.message === 'clave' ? 'Usuario o contraseña incorrectos.' : 'No hay conexión. Intenta de nuevo.'; }
+};
+$('clave').addEventListener('keydown', e => { if (e.key === 'Enter') $('entrar').click(); });
+function salir() { auth = null; try { sessionStorage.removeItem('alice_panel_auth'); } catch (e) {} $('app').style.display = 'none'; $('login').style.display = 'block'; }
+
+document.querySelectorAll('nav button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('nav button').forEach(x => x.classList.toggle('activa', x === b));
+  document.querySelectorAll('.vista').forEach(v => v.classList.toggle('activa', v.id === 'v-' + b.dataset.v));
+});
+
+async function recargar() {
+  try { D = await llamar('alice-panel-datos'); pintar(); $('actualizado').textContent = 'Actualizado ' + new Date().toLocaleTimeString('es-CO', { hour: 'numeric', minute: '2-digit' }); }
+  catch (e) { if (e.message !== 'clave') $('actualizado').textContent = '⚠️ Sin conexión'; }
+}
+function mostrar() { $('login').style.display = 'none'; $('app').style.display = 'block'; pintar(); $('actualizado').textContent = 'Actualizado ahora'; setInterval(recargar, 30000); }
+
+// ---------- Conversaciones (agrupadas por clienta) ----------
+function conversaciones() {
+  const porW = {};
+  for (const m of D.mensajes) (porW[m.whatsapp] = porW[m.whatsapp] || []).push(m);
+  return Object.entries(porW).map(([w, ms]) => {
+    const peds = D.pedidos.filter(p => p.whatsapp === w && p.estado !== 'cancelado');
+    const ult = peds[0];
+    let etapa = 'nueva';
+    if (ult && ult.estado === 'despachado') etapa = 'despachado';
+    else if (ult && ['pagado', 'contra_entrega_confirmado'].includes(ult.estado)) etapa = 'pago';
+    else if (ult) etapa = 'pidio';
+    else if (ms.some(m => m.autor === 'ai' && /\$\s?\d/.test(m.texto))) etapa = 'interesada';
+    const nombre = (D.pedidos.find(p => p.whatsapp === w && !p.sin_pedido) || {}).cliente_nombre;
+    const ultimo = ms[ms.length - 1];
+    return { w, ms, etapa, nombre: nombre || cel(w), ultimo, pausada: (D.pausas || []).includes(w) };
+  }).sort((a, b) => new Date(b.ultimo.creado_en) - new Date(a.ultimo.creado_en));
+}
+const ETAPAS = { todas: 'Todas', nueva: 'Nueva', interesada: 'Interesada', pidio: 'Pidió', pago: 'Pagó / confirmó', despachado: 'Despachado' };
+
+// ---------- Pintar ----------
+function pintar() { pintarHoy(); pintarPedidos(); pintarInventario(); pintarChats(); }
+
+function pintarHoy() {
+  const h = hoy(), ps = D.pedidos.filter(p => !p.sin_pedido && p.estado !== 'cancelado');
+  const pedHoy = ps.filter(p => dia(p.creado_en) === h);
+  const vendidos = ['pagado', 'contra_entrega_confirmado', 'despachado'];
+  const vendHoy = pedHoy.filter(p => vendidos.includes(p.estado)).reduce((s, p) => s + Number(p.total || 0), 0);
+  const convs = conversaciones(), convHoy = convs.filter(c => c.ms.some(m => m.autor === 'human' && dia(m.creado_en) === h));
+  const porDesp = D.pedidos.filter(GRUPOS.despachar[1]), porRev = D.pedidos.filter(GRUPOS.revisar[1]);
+  const pocas = D.inventario.filter(i => i.unidades <= 1);
+  const cuenta = {}; for (const p of pedHoy) for (const i of (p.items || [])) cuenta[i.prenda] = (cuenta[i.prenda] || 0) + (i.cantidad || 1);
+  const top = Object.entries(cuenta).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  $('v-hoy').innerHTML = `
+    <div class="tarjetas">
+      <div class="dato"><small>Conversaciones hoy</small><b>${convHoy.length}</b></div>
+      <div class="dato"><small>Pedidos hoy</small><b>${pedHoy.length}</b></div>
+      <div class="dato"><small>Vendido hoy</small><b>${plata(vendHoy)}</b></div>
+      <div class="dato"><small>Por despachar</small><b>${porDesp.length}</b></div>
+      <div class="dato"><small>Comprobantes por revisar</small><b>${porRev.length}</b></div>
+    </div>
+    <h2>Lo más pedido hoy</h2>
+    <div class="caja">${top.length ? top.map(([n, c]) => `<div>${esc(n)} · <b>${c}</b></div>`).join('') : '<div class="vacio">Todavía no hay pedidos hoy.</div>'}</div>
+    <h2>Se está agotando</h2>
+    <div class="caja">${pocas.length ? pocas.map(i => `<div class="${i.unidades === 0 ? 'alerta' : ''}">${esc(i.nombre_producto)} ${esc(i.color)} ${esc(i.talla)} · ${i.unidades === 0 ? 'agotado' : 'queda 1'}</div>`).join('') : '<div class="vacio">Todo con 2 o más unidades.</div>'}</div>`;
+  const n = porDesp.length + porRev.length; $('n-pedidos').hidden = !n; $('n-pedidos').textContent = n;
+  $('n-inv').hidden = !pocas.length; $('n-inv').textContent = pocas.length;
+}
+
+function tarjetaPedido(p) {
+  const [txt, cls] = ESTADOS[p.estado] || [p.estado, 'e-gris'];
+  const foto = p.comprobante_url ? `<a class="comprobante" href="${esc(p.comprobante_url)}" target="_blank" rel="noopener"><img src="${esc(p.comprobante_url)}" alt="Comprobante de ${esc(p.cliente_nombre)}" loading="lazy"></a>` : '';
+  const b = [];
+  if (['pagado', 'contra_entrega_confirmado'].includes(p.estado)) b.push(`<button class="btn" data-a="despachado" data-id="${p.id}">📦 Despachado</button>`);
+  if (p.estado === 'comprobante_recibido' && !p.sin_pedido) b.push(`<button class="btn" data-a="aprobar" data-id="${p.id}">✅ Aprobar pago</button>`);
+  if (p.estado === 'despachado') b.push(`<button class="btn sec" data-a="deshacer_despachado" data-id="${p.id}">Deshacer despachado</button>`);
+  if (!['despachado', 'cancelado'].includes(p.estado)) b.push(`<button class="btn peligro" data-a="cancelar" data-id="${p.id}">Cancelar</button>`);
+  if (p.whatsapp) b.push(`<button class="btn sec" data-chat="${esc(p.whatsapp)}">💬 Chat</button>`);
+  return `<div class="pedido">
+    <div class="fila"><div><div class="nombre">${esc(p.cliente_nombre)}</div><div class="sub">${esc(cel(p.cliente_telefono || p.whatsapp))} · ${esc(p.ciudad || '')} · ${hora(p.creado_en)}</div></div><div class="total">${plata(p.total)}</div></div>
+    <div class="prendas">${esc(prendas(p))}</div>
+    <span class="estado ${cls}">${txt}</span> <span class="sub">${p.forma_pago === 'contra_entrega' ? 'Contra entrega' : (p.forma_pago ? 'Transferencia' : '')}</span>
+    ${foto}
+    <details><summary>Datos de envío</summary><p>${esc(p.detalle_pedido)}</p></details>
+    <div class="acciones">${b.join('')}</div></div>`;
+}
+
+function pintarPedidos() {
+  const chips = Object.entries(GRUPOS).map(([k, [t, f]]) => `<button class="chip ${k === filtroPedidos ? 'activa' : ''}" data-f="${k}">${t} (${D.pedidos.filter(f).length})</button>`).join('');
+  const lista = D.pedidos.filter(GRUPOS[filtroPedidos][1]);
+  const med = lista.filter(esMed), fuera = lista.filter(p => !esMed(p));
+  const col = (t, ps) => `<div class="columna"><h3><span>${t}</span><span>${ps.length}</span></h3>${ps.map(tarjetaPedido).join('') || '<div class="vacio">Nada aquí.</div>'}</div>`;
+  $('v-pedidos').innerHTML = `<div class="chips">${chips}</div><div class="columnas">${col('Medellín', med)}${col('Fuera de Medellín', fuera)}</div>`;
+}
+
+function pintarInventario() {
+  const total = D.inventario.reduce((s, i) => s + i.unidades, 0), valor = D.inventario.reduce((s, i) => s + i.unidades * Number(i.precio || 0), 0);
+  $('v-inventario').innerHTML = `<div class="tarjetas"><div class="dato"><small>Piezas</small><b>${total}</b></div><div class="dato"><small>Valor</small><b>${plata(valor)}</b></div></div>
+    <table><thead><tr><th>Prenda</th><th>Color</th><th>Talla</th><th class="n">Precio</th><th class="n">Unidades</th></tr></thead><tbody>
+    ${D.inventario.map(i => `<tr><td>${esc(i.nombre_producto)}</td><td>${esc(i.color)}</td><td>${esc(i.talla)}</td><td class="n">${plata(i.precio)}</td>
+      <td class="n"><span class="unid"><button data-u="-1" data-id="${i.id}" aria-label="Quitar una">−</button><b class="${i.unidades <= 1 ? 'alerta' : ''}">${i.unidades}</b><button data-u="1" data-id="${i.id}" aria-label="Agregar una">+</button></span></td></tr>`).join('')}
+    </tbody></table>`;
+}
+
+function pintarChats() {
+  const convs = conversaciones();
+  $('etapas').innerHTML = Object.entries(ETAPAS).map(([k, t]) => `<button class="chip ${k === filtroEtapa ? 'activa' : ''}" data-e="${k}">${t} (${k === 'todas' ? convs.length : convs.filter(c => c.etapa === k).length})</button>`).join('');
+  const vis = convs.filter(c => filtroEtapa === 'todas' || c.etapa === filtroEtapa);
+  $('lista').innerHTML = vis.map(c => `<div class="item ${c.w === chatAbierto ? 'sel' : ''}" data-chat="${esc(c.w)}">
+      <div class="fila" style="display:flex;justify-content:space-between"><b>${esc(c.nombre)}</b><small class="sub">${hora(c.ultimo.creado_en)}</small></div>
+      <div class="ultimo">${c.pausada ? '⏸️ ' : ''}${esc(c.ultimo.texto)}</div><span class="estado e-esp">${ETAPAS[c.etapa]}</span></div>`).join('') || '<div class="vacio">No hay conversaciones.</div>';
+  const c = convs.find(x => x.w === chatAbierto);
+  $('chats').classList.toggle('abierto', !!c);
+  if (!c) { $('hilo').innerHTML = '<div class="vacio" style="padding:16px">Elige una conversación.</div>'; return; }
+  const yaTexto = document.getElementById('texto-resp');
+  if (yaTexto) borrador[chatAbierto] = yaTexto.value;
+  if (yaTexto && document.activeElement === yaTexto && $('hilo').dataset.w === c.w && $('hilo').dataset.n == c.ms.length) return; // está escribiendo y no hay nada nuevo
+  $('hilo').dataset.w = c.w; $('hilo').dataset.n = c.ms.length;
+  $('hilo').innerHTML = `<div class="cab"><div><button class="btn sec volver" data-cerrar="1">←</button> <b>${esc(c.nombre)}</b> <span class="sub">${esc(cel(c.w))}</span></div>
+      <div>${c.pausada ? `<span class="pausa">Alice en pausa</span> <button class="btn sec" data-pausa="0" data-w="${esc(c.w)}">Devolver a Alice</button>` : `<button class="btn sec" data-pausa="1" data-w="${esc(c.w)}">Pausar a Alice</button>`}</div></div>
+    <div class="mensajes" id="mensajes">${c.ms.map(m => `<div class="burbuja b-${m.autor}">${esc(m.texto)}<small>${m.autor === 'paula' ? 'Tú · ' : m.autor === 'ai' ? 'Alice · ' : ''}${hora(m.creado_en)}</small></div>`).join('')}</div>
+    <div class="responder"><textarea id="texto-resp" placeholder="Escríbele tú (Alice se pausa con ella)"></textarea><button class="btn" id="enviar-resp">Enviar</button></div>`;
+  $('texto-resp').value = borrador[chatAbierto] || '';
+  $('texto-resp').oninput = e => borrador[chatAbierto] = e.target.value;
+  const ms = $('mensajes'); ms.scrollTop = ms.scrollHeight;
+  $('enviar-resp').onclick = async () => {
+    const t = $('texto-resp').value.trim(); if (!t) return;
+    $('enviar-resp').disabled = true;
+    try { const r = await llamar('alice-panel-accion', { accion: 'responder', whatsapp: c.w, texto: t });
+      if (r.ok) { borrador[c.w] = ''; aviso('Enviado ✓ Alice queda en pausa con ella'); await recargar(); } else aviso('⚠️ ' + (r.error || 'No se pudo enviar'));
+    } catch (e) { aviso('⚠️ No se pudo enviar. Tu texto sigue ahí.'); }
+    finally { const b = $('enviar-resp'); if (b) b.disabled = false; }
+  };
+}
+
+// ---------- Clics ----------
+document.addEventListener('click', async e => {
+  const t = e.target.closest('button, .item'); if (!t) return;
+  if (t.dataset.f) { filtroPedidos = t.dataset.f; pintarPedidos(); return; }
+  if (t.dataset.e) { filtroEtapa = t.dataset.e; pintarChats(); return; }
+  if (t.dataset.chat) { chatAbierto = t.dataset.chat; document.querySelector('nav button[data-v="chats"]').click(); pintarChats(); return; }
+  if (t.dataset.cerrar) { chatAbierto = null; pintarChats(); return; }
+  if (t.dataset.pausa) {
+    await accion({ accion: 'pausa', whatsapp: t.dataset.w, pausar: t.dataset.pausa === '1' }, t.dataset.pausa === '1' ? 'Alice en pausa con ella' : 'Alice vuelve a atenderla'); return;
+  }
+  if (t.dataset.u) {
+    const i = D.inventario.find(x => x.id === t.dataset.id); const nuevo = Math.max(0, i.unidades + Number(t.dataset.u));
+    i.unidades = nuevo; pintarInventario(); await accion({ accion: 'unidades', id: i.id, unidades: nuevo }, 'Guardado'); return;
+  }
+  if (t.dataset.a) {
+    const a = t.dataset.a, p = D.pedidos.find(x => x.id === t.dataset.id);
+    const preguntas = { cancelar: `¿Cancelar el pedido de ${p.cliente_nombre}? Si ya se había descontado, las prendas vuelven al inventario.`,
+      aprobar: `¿Aprobar el pago de ${p.cliente_nombre}? Le llega "¡Pago confirmado!" y se descuenta del inventario.` };
+    if (preguntas[a] && !confirm(preguntas[a])) return;
+    t.disabled = true;
+    await accion({ accion: a, id: p.id }, { despachado: 'Marcado como despachado 📦', aprobar: 'Pago aprobado ✅', cancelar: 'Pedido cancelado', deshacer_despachado: 'Listo' }[a]);
+  }
+});
+async function accion(cuerpo, ok) {
+  try { const r = await llamar('alice-panel-accion', cuerpo); if (r.ok === false) aviso('⚠️ ' + (r.error || 'No se pudo')); else aviso(ok); }
+  catch (e) { aviso('⚠️ Sin conexión, intenta de nuevo'); }
+  await recargar();
+}
+
+if (auth) llamar('alice-panel-datos').then(d => { D = d; mostrar(); }).catch(() => {});
+</script>
+</body>
+</html>
